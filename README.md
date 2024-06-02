@@ -3,9 +3,6 @@
 This project involves web scraping articles from provided URLs, processing the textual data to extract various metrics, and saving the results to output files. The project is structured to work as a standalone Python application.
 
 ### How to Run
-- Create and Activate a Virtual Environment
-`conda create -p venv python=3.8 -y`
-`conda activate ./venv`
 
 - Install the requirement/ dependencies
   `pip install -r requirements.txt`

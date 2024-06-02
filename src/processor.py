@@ -56,7 +56,7 @@ def analyze_text(row):
     fog_index = 0.4 * (avg_sentence_length + complex_word_percentage) if avg_sentence_length else 0
     avg_words_per_sentence = word_count / len(sentences) if len(sentences) else 0
     
-    syllable_count = sum(count_syllables(word) for word in filtered_words)
+    syllable_count = sum(count_syllables(ord) for word in filtered_words)
     personal_pronoun_count = count_personal_pronouns(cleaned_text)
     avg_word_length = sum(len(word) for word in filtered_words) / word_count if word_count else 0
     
