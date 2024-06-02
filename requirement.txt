@@ -1,0 +1,8 @@
+pandas
+beautifulsoup4
+newspaper3k
+requests
+textblob
+textstat
+nltk
+openpyxl
