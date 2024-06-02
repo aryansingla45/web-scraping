@@ -1,0 +1,13 @@
+prefix=/workspaces/blackassign-project/.venv
+exec_prefix=/workspaces/blackassign-project/.venv
+libdir=/workspaces/blackassign-project/.venv/lib
+sharedlibdir=/workspaces/blackassign-project/.venv/lib
+includedir=/workspaces/blackassign-project/.venv/include
+
+Name: zlib
+Description: zlib compression library
+Version: 1.2.13
+
+Requires:
+Libs: -L${libdir} -L${sharedlibdir} -lz
+Cflags: -I${includedir}

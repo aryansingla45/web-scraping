@@ -1,7 +1,10 @@
+import os
 import pandas as pd
-import nltk
+import re
 from textblob import TextBlob
-from src.utils import clean_text, count_syllables, count_personal_pronouns
+import textstat
+import nltk
+from collections import Counter
 
 nltk.download('punkt')
 
@@ -17,12 +20,19 @@ stopwords_files = [
 
 custom_stopwords = set()
 for file in stopwords_files:
-    with open(file, 'r') as f:
+    with open(file, 'r', encoding='utf-8', errors='ignore') as f:
         for line in f:
             custom_stopwords.add(line.strip().lower())
 
-positive_words = set(open('MasterDictionary/positive-words.txt').read().split())
-negative_words = set(open('MasterDictionary/negative-words.txt').read().split())
+positive_words = set(open('MasterDictionary/positive-words.txt', 'r', encoding='utf-8', errors='ignore').read().split())
+negative_words = set(open('MasterDictionary/negative-words.txt', 'r', encoding='utf-8', errors='ignore').read().split())
+
+output_structure = pd.read_excel("Output Data Structure.xlsx")
+
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r'\n', ' ', text)
+    return text
 
 def analyze_text(row):
     cleaned_text = clean_text(row['text'])
@@ -50,6 +60,7 @@ def analyze_text(row):
     personal_pronoun_count = count_personal_pronouns(cleaned_text)
     avg_word_length = sum(len(word) for word in filtered_words) / word_count if word_count else 0
     
+    # Return a dictionary matching the output structure
     return {
         'URL_ID': row['URL_ID'],
         'URL': row['url'],
@@ -68,17 +79,41 @@ def analyze_text(row):
         'AVG WORD LENGTH': avg_word_length
     }
 
-def process_data(input_file, output_file):
-    df = pd.read_csv(input_file)
+def count_syllables(word):
+    vowels = 'aeiouy'
+    word = word.lower()
+    syllables = 0
+    if word[0] in vowels:
+        syllables += 1
+    for index in range(1, len(word)):
+        if word[index] in vowels and word[index - 1] not in vowels:
+            syllables += 1
+    if word.endswith('e'):
+        syllables -= 1
+    if syllables == 0:
+        syllables += 1
+    return syllables
+
+def count_personal_pronouns(text):
+    pronouns = ['i', 'we', 'my', 'ours', 'us']
+    words = text.split()
+    count = sum(1 for word in words if word in pronouns)
+    return count
+
+def process_data(scraped_file, output_file):
+    df = pd.read_csv(scraped_file)
     x = pd.read_excel('Input.xlsx')
     df["URL_ID"] = x["URL_ID"]
     
-    output_structure = pd.read_excel("Output Data Structure.xlsx")
-    
     output_data = df.apply(lambda row: analyze_text(row), axis=1)
+    
+    # Convert the results to a DataFrame
     output_df = pd.DataFrame(output_data.tolist())
     
+    # Ensure the columns are in the exact order as in the output structure
     output_df = output_df[output_structure.columns]
+    
+    # Save the output to a new Excel file
     output_df.to_excel(output_file, index=False)
     
-    print(f"Textual analysis completed and data saved to {output_file}.")
+    print("Textual analysis completed and data saved to", output_file)

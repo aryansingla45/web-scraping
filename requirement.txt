@@ -6,3 +6,4 @@ textblob
 textstat
 nltk
 openpyxl
+lxml[html_clean]

@@ -1,6 +1,6 @@
 import os
-from src.scrape import scrape_articles
-from src.processor import process_data
+from scrape import scrape_articles
+from processor import process_data
 
 def main():
     input_file = 'Input.xlsx'
