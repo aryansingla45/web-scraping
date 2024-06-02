@@ -45,8 +45,8 @@ def analyze_text(row):
     
     positive_score = sum(1 for word in filtered_words if word in positive_words)
     negative_score = sum(1 for word in filtered_words if word in negative_words)
-    polarity_score = blob.sentiment.polarity
-    subjectivity_score = blob.sentiment.subjectivity
+    polarity_score = (positive_score - negative_score) / ((positive_score + negative_score) + 0.000001)
+    subjectivity_score = (positive_score + negative_score) / (word_count + 0.000001)
     
     avg_sentence_length = word_count / len(sentences) if len(sentences) else 0
     
@@ -60,7 +60,7 @@ def analyze_text(row):
     personal_pronoun_count = count_personal_pronouns(cleaned_text)
     avg_word_length = sum(len(word) for word in filtered_words) / word_count if word_count else 0
     
-    # Return a dictionary matching the output structure
+    
     return {
         'URL_ID': row['URL_ID'],
         'URL': row['url'],
@@ -78,6 +78,7 @@ def analyze_text(row):
         'PERSONAL PRONOUNS': personal_pronoun_count,
         'AVG WORD LENGTH': avg_word_length
     }
+
 
 def count_syllables(word):
     vowels = 'aeiouy'
